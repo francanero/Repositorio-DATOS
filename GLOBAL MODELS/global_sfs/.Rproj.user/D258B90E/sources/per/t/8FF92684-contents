@@ -1,0 +1,80 @@
+library(dplyr) #manipulacion datos
+library(mlr)
+library(randomForest)
+
+setwd("D:/Doctorado/spec_lab_r/")
+datos <- read.csv2("D:/Doctorado/estadisticos_tesis/datos.csv")
+
+raw <- read.csv2("raw.csv", sep = ",", dec = ".")
+raw <- raw[3:length(raw)]
+cr <- read.csv2("cr.csv", sep = ",", dec = ".")
+cr <- cr[2:length(cr)]
+msc <- read.csv2("msc.csv", sep = ",", dec = ".")
+msc <- msc[2:length(msc)]
+
+names(raw) <- paste0(names(raw), "raw")
+names(cr) <- paste0(names(cr), "cr")
+names(msc) <- paste0(names(msc), "msc")
+db <- bind_cols(raw, cr, msc)
+
+#Generales
+
+
+ps.rf <- makeParamSet(makeDiscreteParam("ntree", values = c(100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 
+                                                            1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000)))
+rdesc <- makeResampleDesc("CV", iters = 10)
+ctrl <- makeFeatSelControlSequential(method = "sfs", alpha = 0.001)
+
+#SOM
+
+rf_mo_raw <- bind_cols(datos[[5]], db)
+names(rf_mo_raw)[1] <- "mo"
+mo.raw.task <- makeRegrTask(id = "nieves", data = rf_mo_raw, target = "mo")
+res.mo.raw <- tuneParams("regr.randomForest", task = mo.raw.task, resampling = rdesc, par.set = ps.rf, measures = list(rmse, rsq),  control = makeTuneControlGrid())
+
+
+lrn.mo.raw <- makeFeatSelWrapper(setHyperPars(makeLearner("regr.randomForest"), par.vals = res.mo.raw$x), resampling = rdesc, measures = list(rmse, rsq), control = ctrl, show.info = T)
+mod.mo.raw <- train(lrn.mo.raw, task = mo.raw.task)
+
+sfeats.mo.raw <- getFeatSelResult(mod.mo.raw)
+sfeats.mo.raw$x
+analyzeFeatSelResult(sfeats.mo.raw)
+sd(datos[[5]])/(sfeats.mo.raw$y)
+
+#Carbonates
+
+rf_carb_msc <- bind_cols(datos[[7]], db)
+names(rf_carb_msc)[1] <- "carb"
+carb.msc.task <- makeRegrTask(id = "nieves", data = rf_carb_msc, target = "carb")
+res.carb.msc <- tuneParams("regr.randomForest", task = carb.msc.task, resampling = rdesc, par.set = ps.rf, measures = list(rmse, rsq),  control = makeTuneControlGrid())
+
+plot(res.carb.msc[["opt.path"]][["env"]][["path"]][["ntree"]], res.carb.msc[["opt.path"]][["env"]][["path"]][["rmse.test.rmse"]], type = "l")
+
+lrn.carb.msc <- makeFeatSelWrapper(setHyperPars(makeLearner("regr.randomForest"), par.vals = res.carb.msc$x), resampling = rdesc, measures = list(rmse, rsq), control = ctrl, show.info = T)
+mod.carb.msc <- train(lrn.carb.msc, task = carb.msc.task)
+
+
+sfeats.carb.msc <- getFeatSelResult(mod.carb.msc)
+sfeats.carb.msc$x
+analyzeFeatSelResult(sfeats.carb.msc)
+sd(datos[[7]])/(sfeats.carb.msc$y)
+
+#Clay
+
+rf_clay_msc <- bind_cols(datos[[14]], db)
+rf_clay_msc <- rf_clay_msc[-45,]
+names(rf_clay_msc)[1] <- "clay"
+clay.msc.task <- makeRegrTask(id = "nieves", data = rf_clay_msc, target = "clay")
+res.clay.msc <- tuneParams("regr.randomForest", task = clay.msc.task, resampling = rdesc, par.set = ps.rf, measures = list(rmse, rsq),  control = makeTuneControlGrid())
+
+plot(res.clay.msc[["opt.path"]][["env"]][["path"]][["ntree"]], res.clay.msc[["opt.path"]][["env"]][["path"]][["rmse.test.rmse"]], type = "l")
+
+lrn.clay.msc <- makeFeatSelWrapper(setHyperPars(makeLearner("regr.randomForest"), par.vals = res.clay.msc$x), resampling = rdesc, measures = list(rmse, rsq), control = ctrl, show.info = T)
+mod.clay.msc <- train(lrn.clay.msc, task = clay.msc.task)
+
+sfeats.clay.msc <- getFeatSelResult(mod.clay.msc)
+sfeats.clay.msc$x
+res.clay.msc
+sd(datos[[14]][-45])/res.clay.msc[["y"]][["rmse.test.rmse"]]
+analyzeFeatSelResult(sfeats.clay.msc)
+sd(datos[[14]][-45])/(sfeats.clay.msc$y)

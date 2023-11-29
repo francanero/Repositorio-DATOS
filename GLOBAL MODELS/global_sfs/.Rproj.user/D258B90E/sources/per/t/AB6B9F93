@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605887493494.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "AB6B9F93",
+    "lastKnownWriteTime" : 2911705146677619770,
+    "last_content_update" : 1605887493494,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "id" : "cdc72d55e7ac45b29ff162da137eaaed",
+        "name" : "mod.clay.msc",
+        "title" : "mod.clay.msc"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "object_explorer"
+}

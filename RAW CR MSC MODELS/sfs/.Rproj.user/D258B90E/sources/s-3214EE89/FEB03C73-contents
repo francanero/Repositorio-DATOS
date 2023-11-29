@@ -1,0 +1,171 @@
+library(ggplot2)
+library(dplyr)
+library(ggThemeAssist)
+
+setwd("D:/Doctorado/spec_lab_r/")
+
+
+raw <- read.csv2("raw.csv", sep = ",", dec = ".")
+raw <- raw[3:length(raw)]
+
+coln <- names(raw)
+coln <- substring(coln, first = 2)
+
+mean_raw <- c()
+sd_raw <- c()
+for(i in 1:length(raw)){
+  mean_raw[i] <- mean(raw[,i])
+  sd_raw[i] <- sd(raw[,i])
+}
+g_raw <- as.data.frame(mean_raw)
+g_raw[2] <- coln
+g_raw[[2]] <- as.numeric(g_raw[[2]])
+g_raw[[3]] <- "raw"
+for(i in 1:nrow(g_raw)){
+  g_raw[i,4] <- g_raw[i,1] - sd_raw[i]
+  g_raw[i,5] <- g_raw[i,1] + sd_raw[i]
+}
+names(g_raw) <- c("value", "coln", "trat", "min", "max")
+graph <- data.frame(as.numeric(coln))
+graph[2] <- mean_raw
+names(graph) <- c("coln", "value")
+
+
+
+ncol <- data.frame(seq(400, 2450, 1))
+
+sfs_mo <- data.frame(wl = c(411, 642, 2017, 2283), trat = "raw")
+sfs_mo <- rbind(sfs_mo , data.frame(wl = c(1071, 1109, 1835, 2086, 2221), trat = "cr"))
+sfs_mo <- rbind(sfs_mo , data.frame(wl = c(638, 643, 1451, 1454, 1464, 1589, 1643), trat = "msc"))
+sfs_mo[,3] <- seq(1, nrow(sfs_mo), 1)
+names(sfs_mo)[3] <- "lnk"
+
+
+
+
+ncol[,2] <- match(ncol[[1]], sfs_mo[[1]])
+names(ncol)[1] <- "wl"
+names(ncol)[2] <- "lnk"
+join <- left_join(ncol, sfs_mo, by = "lnk")
+
+join[,2][!is.na(join$lnk)] <- 1
+join[,2][is.na(join$lnk)] <- 0
+join[,4][is.na(join$trat)] <- "no"
+join[,3] <- "mo"
+
+
+join[join$lnk == 0,5] <- "0"
+join[join$lnk == 1 & join$trat == "raw",5] <- "1"
+join[join$lnk == 1 & join$trat == "cr",5] <- "2"
+join[join$lnk == 1 & join$trat == "msc",5] <- "3"
+join_mo <- join
+#join_mo[,5] <- graph[,2]
+
+#carbonatos
+
+b <- data.frame(wl = c(1015, 1024, 1025, 1896, 1908), trat = "raw")
+
+b <- rbind(b, data.frame(wl = c(806, 811, 815, 942, 964, 1361, 2233, 2356), trat = "cr"))
+b <- rbind(b, data.frame(wl = c(1885, 2055, 2056), trat = "msc"))
+
+b[,3] <- seq(1, nrow(b), 1)
+names(b)[3] <- "lnk"
+
+ncol[,2] <- match(ncol[[1]], b[[1]])
+names(ncol)[1] <- "wl"
+names(ncol)[2] <- "lnk"
+join <- left_join(ncol, b, by = "lnk")
+
+join[,2][!is.na(join$lnk)] <- 1
+join[,2][is.na(join$lnk)] <- 0
+join[,4][is.na(join$trat)] <- "no"
+join[,3] <- "carb"
+join[join$lnk == 0,5] <- "0"
+join[join$lnk == 1 & join$trat == "raw",5] <- "1"
+join[join$lnk == 1 & join$trat == "cr",5] <- "2"
+join[join$lnk == 1 & join$trat == "msc",5] <- "3"
+join_carb <- join
+#join_carb[,5] <- graph[,2]
+
+#arcilla
+
+c <- data.frame(wl = c(572, 1829, 2441, 2445), trat = "raw")
+
+c <- rbind(c, data.frame(wl = c(1090, 1874, 2085, 2296, 2385), trat = "cr"))
+c <- rbind(c, data.frame(wl = c(529, 573, 575, 577, 1846, 2435, 2443), trat = "msc"))
+
+c[,3] <- seq(1, nrow(c), 1)
+names(c)[3] <- "lnk"
+
+ncol[,2] <- match(ncol[[1]], c[[1]])
+names(ncol)[1] <- "wl"
+names(ncol)[2] <- "lnk"
+join <- left_join(ncol, c, by = "lnk")
+
+join[,2][!is.na(join$lnk)] <- 1
+join[,2][is.na(join$lnk)] <- 0
+join[,4][is.na(join$trat)] <- "no"
+join[,3] <- "clay"
+join[join$lnk == 0,5] <- "0"
+join[join$lnk == 1 & join$trat == "raw",5] <- "1"
+join[join$lnk == 1 & join$trat == "cr",5] <- "2"
+join[join$lnk == 1 & join$trat == "msc",5] <- "3"
+join_clay <- join
+#join_clay[,5] <- graph[,2]
+
+#setwd("D:/Doctorado/proy_origin/")
+#write.csv2(join_mo, file = "sfs_mo.csv")
+#seq(400, 2450, 1), , join_clay[,5]
+var_sfs <- data.frame(bind_rows(bind_cols(seq(400, 2450, 1), join_mo[,3:5]), 
+                                bind_cols(seq(400, 2450, 1),join_carb[,3:5]), 
+                                bind_cols(seq(400, 2450, 1),join_clay[,3:5])))
+names(var_sfs) <- c("wave", "var", "trat", "data")
+var_sfs <- var_sfs[!is.na(var_sfs$trat),]
+var_sfs[var_sfs$var == "mo",2] <- "SOM"
+var_sfs[var_sfs$var == "carb",2] <- "Carbs"
+var_sfs[var_sfs$var == "clay",2] <- "Clay"
+
+#cols <- c("raw" = "|", "1dv" = "|", "abs" = "|", "cr" = "|", "msc" = "|", "snv" = "|")
+cols <- c("raw" = "#1b9e77", "cr" = "#d95f02", "msc" = "#7570b3")
+#shaps <- c("raw" = "15", "cr" = "16", "msc" = "17")
+
+gmo <- ggplot(var_sfs, aes(x = wave, y = var, colour = trat)) + geom_point(size = 10, shape = "|", alpha = 1) + ylab("Variable") +
+  guides(fill=guide_legend(title="")) + scale_x_continuous(breaks=seq(400,2450,200), limits=c(400, 2450))  + scale_colour_manual(values = cols) +
+  theme(panel.border = element_rect(size = 1.2, fill = NA),
+        panel.background = element_rect(fill = "gray100"),
+        panel.grid.major = element_line(linetype = "dashed", size = 0.5, colour = "grey80"), 
+        panel.grid.minor = element_line(colour = "gray78", 
+                                        linetype = "dashed", size = 0.5), axis.title = element_text(face = "bold"),
+        axis.text = element_text(),
+        plot.title = element_text(), 
+        legend.text = element_text(), 
+        axis.ticks = element_line(colour = "black", size = 1),
+        legend.key = element_rect(fill = "gray100")) + labs(x = "Wavelength (nm)", colour = "") + theme(axis.title = element_text(size = 16), 
+                                                                                                        axis.text.x = element_text(size = 12, 
+                                                                                                                                   colour = "black", angle = 90, vjust = 0.4, hjust = 1), axis.text.y = element_text(size = 12, 
+                                                                                                                                                                                                                     colour = "black", vjust = 0.3, angle = 0),
+                                                                                                        
+                                                                                                        plot.title = element_text(size = 18)) +labs(colour = NULL)
+
+gmo <- ggplot(var_sfs, aes(x = wave, y = var, colour = trat)) + geom_point(size = 10, shape = "|", alpha = 1) + ylab("Combinación PE-SC") +
+  guides(fill=guide_legend(title="")) + scale_x_continuous(breaks=seq(400,2450,200), limits=c(400, 2450))  + scale_colour_manual(values = cols) +
+  theme(panel.border = element_rect(size = 1.2, fill = NA),
+        panel.background = element_rect(fill = "gray100"),
+        panel.grid.major = element_line(linetype = "dashed", size = 0.5, colour = "grey80"), 
+        panel.grid.minor = element_line(colour = "gray78", 
+                                        linetype = "dashed", size = 0.5), axis.title = element_text(face = "bold"),
+        axis.text = element_text(),
+        plot.title = element_text(), 
+        legend.position = "none", 
+        axis.ticks = element_line(colour = "black", size = 1)) + labs(x = "Longitud de onda (nm)", colour = "") + theme(axis.title = element_text(size = 16), 
+                                                                                                                        axis.text.x = element_text(size = 12, 
+                                                                                                                                                   colour = "black", angle = 90, vjust = 0.4, hjust = 1), axis.text.y = element_text(size = 12, 
+                                                                                                                                                                                                                                     colour = "black", vjust = 0.3, angle = 0),
+                                                                                                                        plot.title = element_text(size = 18)) +labs(colour = NULL)
+
+#gggThemeAssistGadget(gmo)
+
+gmo 
+
+setwd("C:/Users/usuario/Desktop")
+ggsave("ind_sffs.jpg", plot=gmo, height=6, width=19, units=c("cm"), dpi=600)

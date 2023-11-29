@@ -1,0 +1,64 @@
+setwd(dir = "D:/Doctorado/spec_lab_r/")
+library(dplyr)
+raw <- read.csv2("raw.csv", sep = ",", dec = ".")
+datos <- read.csv2("D:/Doctorado/estadisticos_tesis/datos.csv")
+
+coln <- names(raw[3:length(raw)])
+coln <- substring(coln, first = 2)
+
+#Materia orgánica
+
+mo <- bind_cols(datos[5], raw[3:length(raw)])
+corr_mo <- c()
+
+for(i in 2:length(mo)){
+  corr_mo[i] <- cor(mo[1], mo[i])
+}
+
+corr_mo <- corr_mo[2:length(corr_mo)]
+
+#Carbonatos
+
+carb <- bind_cols(datos[7], raw[3:length(raw)])
+corr_carb <- c()
+
+for(i in 2:length(carb)){
+  corr_carb[i] <- cor(carb[1], carb[i])
+}
+
+corr_carb <- corr_carb[2:length(corr_carb)]
+
+#Arcilla
+
+clay <- bind_cols(datos[14], raw[3:length(raw)])
+corr_clay <- c()
+
+for(i in 2:length(clay)){
+  corr_clay[i] <- cor(clay[1], clay[i])
+}
+
+corr_clay <- corr_clay[2:length(corr_clay)]
+
+#Gráfica final
+
+df <- as.data.frame(coln)
+df[2] <- corr_mo
+df[3] <- corr_carb
+df[4] <- corr_clay
+names(df) <- c("wave", "mo", "carb", "clay")
+
+
+prueba <- melt(df,id.vars='wave', measure.vars=c("mo", "carb", "clay"))
+prueba[,4] <-  as.integer(substring(prueba[,1], first = 1))
+names(prueba$V4) <- "wav"
+colnames(prueba) <- c("no", "spec", "value", "wave")
+
+g <- ggplot(prueba, aes(x = wave, y = spec, fill = value)) + geom_raster()
+g + scale_x_continuous(breaks=seq(350,2500,200))  + xlab("Longitud de onda") + ylab("Tratamiento espectral") + 
+  scale_fill_gradient2(name = "Correlación", low="red", high="blue", mid = "white", midpoint = 0) +
+  ggtitle("Correlación del pH con los espectros según \n longitud de onda y tratamiento espectral")
+
+g <- ggplot(prueba, aes(x = spec, y = wave, fill = value)) + geom_raster()
+g + scale_y_continuous(breaks=seq(350,2500,200))  + ylab("Longitud de onda") + xlab("Variable analítica") + 
+  scale_fill_gradient2(name = "Correlación", low="red", high="blue", mid = "white", midpoint = 0) +
+  ggtitle("Correlación de los espectros brutos con las propiedades primarias del suelo")

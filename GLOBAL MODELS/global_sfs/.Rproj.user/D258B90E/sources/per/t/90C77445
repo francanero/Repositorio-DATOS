@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1618327226260.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "90C77445",
+    "lastKnownWriteTime" : 0,
+    "last_content_update" : 1618327226260,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "id" : "2b37feb2ba6d45c5bf817931fb55a2c3",
+        "name" : "sfeats.clay.msc",
+        "title" : "sfeats.clay.msc"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "object_explorer"
+}

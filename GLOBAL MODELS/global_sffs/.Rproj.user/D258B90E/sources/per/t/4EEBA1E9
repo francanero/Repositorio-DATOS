@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1635937350977.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "4EEBA1E9",
+    "lastKnownWriteTime" : 7810123700365321520,
+    "last_content_update" : 1635937350977,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "id" : "56655113360d4448b74c090b4df42900",
+        "name" : "mod.mo.raw",
+        "title" : "mod.mo.raw"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "object_explorer"
+}

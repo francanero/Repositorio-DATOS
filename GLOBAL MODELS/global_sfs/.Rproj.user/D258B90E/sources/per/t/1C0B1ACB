@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605887509593.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "1C0B1ACB",
+    "lastKnownWriteTime" : 7020023440537034762,
+    "last_content_update" : 1605887509593,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "id" : "c4c936ea76f4437c8515c16a8dd71270",
+        "name" : "mod.carb.msc",
+        "title" : "mod.carb.msc"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "object_explorer"
+}

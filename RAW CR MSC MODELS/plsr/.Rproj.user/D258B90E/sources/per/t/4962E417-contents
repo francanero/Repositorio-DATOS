@@ -1,0 +1,814 @@
+library(dplyr)
+library(pls)
+library(plsVarSel)
+library(tidyr)
+library(caret)
+library(prospectr)
+library(ggplot2)
+library(arules)
+library(ggthemes)
+library(ggThemeAssist)
+library(vctrs)
+library(reshape2)
+library(RColorBrewer)
+library(readr)
+
+setwd("D:/Doctorado/spec_lab_r/")
+datos <- read.csv2("D:/Doctorado/estadisticos_tesis/datos.csv")
+
+raw <- read_csv("raw.csv")
+raw <- raw[3:length(raw)]
+dv <- read_csv("1dv.csv")
+dv <- dv[3:length(dv)]
+abs <- read_csv("abs.csv")
+abs <- abs[3:length(abs)]
+cr <- read_csv("cr.csv")
+cr <- cr[2:length(cr)]
+msc <- read_csv("msc.csv")
+msc <- msc[2:length(msc)]
+snv <- read_csv("snv.csv")
+snv <- snv[2:length(snv)]
+
+lista <- list(raw, dv, abs, cr, msc, snv)
+
+coln <- names(raw)
+coln <- substring(coln, first = 2)
+
+rm(raw)
+rm(dv)
+rm(abs)
+rm(cr)
+rm(msc)
+rm(snv)
+
+
+#Raw spectra
+
+val_ph_raw <- bind_cols(datos[2], lista[1])
+pls_ph_raw <- plsr(pH ~ ., ncomp = 10, data = val_ph_raw, validation = "CV")
+vip_ph_raw <- VIP(pls_ph_raw, opt.comp = selectNcomp(pls_ph_raw, method = "onesigma", plot = TRUE), p = dim(pls_ph_raw$coef)[1])
+ncomp_ph <- data.frame(selectNcomp(pls_ph_raw, method = "onesigma", plot = TRUE))
+rmse_ph_raw <- RMSEP(pls_ph_raw)
+rmse_ph_raw <- rmse_ph_raw[["val"]]
+rmse_ph_raw <- rmse_ph_raw[1, 1, (selectNcomp(pls_ph_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_ph <- data.frame(rmse_ph_raw)
+rdp_ph_raw <- sd(datos[[2]])/rmse_ph_raw
+rdp_ph <- data.frame(rdp_ph_raw)
+rm(rmse_ph_raw)
+rm(rdp_ph_raw)
+rm(val_ph_raw)
+vip_ph <- data.frame(vip_ph_raw)
+rm(vip_ph_raw)
+
+val_ca_raw <- bind_cols(datos[8], lista[1])
+pls_ca_raw <- plsr(Ca ~ ., ncomp = 10, data = val_ca_raw, validation = "CV")
+vip_ca_raw <- VIP(pls_ca_raw, opt.comp = selectNcomp(pls_ca_raw, method = "onesigma", plot = TRUE), p = dim(pls_ca_raw$coef)[1])
+ncomp_ca <- data.frame(selectNcomp(pls_ca_raw, method = "onesigma", plot = TRUE))
+rmse_ca_raw <- RMSEP(pls_ca_raw)
+rmse_ca_raw <- rmse_ca_raw[["val"]]
+rmse_ca_raw <- rmse_ca_raw[1, 1, (selectNcomp(pls_ca_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_ca <- data.frame(rmse_ca_raw)
+rdp_ca_raw <- sd(datos[[8]])/rmse_ca_raw
+rdp_ca <- data.frame(rdp_ca_raw)
+rm(rmse_ca_raw)
+rm(rdp_ca_raw)
+rm(val_ca_raw)
+vip_ca <- data.frame(vip_ca_raw)
+rm(vip_ca_raw)
+
+val_mg_raw <- bind_cols(datos[9], lista[1])
+pls_mg_raw <- plsr(Mg ~ ., ncomp = 10, data = val_mg_raw, validation = "CV")
+vip_mg_raw <- VIP(pls_mg_raw, opt.comp = selectNcomp(pls_mg_raw, method = "onesigma", plot = TRUE), p = dim(pls_mg_raw$coef)[1])
+ncomp_mg <- data.frame(selectNcomp(pls_mg_raw, method = "onesigma", plot = TRUE))
+rmse_mg_raw <- RMSEP(pls_mg_raw)
+rmse_mg_raw <- rmse_mg_raw[["val"]]
+rmse_mg_raw <- rmse_mg_raw[1, 1, (selectNcomp(pls_mg_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_mg <- data.frame(rmse_mg_raw)
+rdp_mg_raw <- sd(datos[[9]])/rmse_mg_raw
+rdp_mg <- data.frame(rdp_mg_raw)
+rm(rmse_mg_raw)
+rm(rdp_mg_raw)
+rm(val_mg_raw)
+vip_mg <- data.frame(vip_mg_raw)
+rm(vip_mg_raw)
+
+val_k_raw <- bind_cols(datos[10], lista[1])
+pls_k_raw <- plsr(K ~ ., ncomp = 10, data = val_k_raw, validation = "CV")
+vip_k_raw <- VIP(pls_k_raw, opt.comp = selectNcomp(pls_k_raw, method = "onesigma", plot = TRUE), p = dim(pls_k_raw$coef)[1])
+ncomp_k <- data.frame(selectNcomp(pls_k_raw, method = "onesigma", plot = TRUE))
+rmse_k_raw <- RMSEP(pls_k_raw)
+rmse_k_raw <- rmse_k_raw[["val"]]
+rmse_k_raw <- rmse_k_raw[1, 1, (selectNcomp(pls_k_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_k <- data.frame(rmse_k_raw)
+rdp_k_raw <- sd(datos[[10]])/rmse_k_raw
+rdp_k <- data.frame(rdp_k_raw)
+rm(rmse_k_raw)
+rm(rdp_k_raw)
+rm(val_k_raw)
+vip_k <- data.frame(vip_k_raw)
+rm(vip_k_raw)
+
+val_na_raw <- bind_cols(datos[11], lista[1])
+pls_na_raw <- plsr(Na ~ ., ncomp = 10, data = val_na_raw, validation = "CV")
+vip_na_raw <- VIP(pls_na_raw, opt.comp = selectNcomp(pls_na_raw, method = "onesigma", plot = TRUE), p = dim(pls_na_raw$coef)[1])
+ncomp_na <- data.frame(selectNcomp(pls_na_raw, method = "onesigma", plot = TRUE))
+rmse_na_raw <- RMSEP(pls_na_raw)
+rmse_na_raw <- rmse_na_raw[["val"]]
+rmse_na_raw <- rmse_na_raw[1, 1, (selectNcomp(pls_na_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_na <- data.frame(rmse_na_raw)
+rdp_na_raw <- sd(datos[[11]])/rmse_na_raw
+rdp_na <- data.frame(rdp_na_raw)
+rm(rmse_na_raw)
+rm(rdp_na_raw)
+rm(val_na_raw)
+vip_na <- data.frame(vip_na_raw)
+rm(vip_na_raw)
+
+val_n_raw <- bind_cols(datos[12], lista[1])
+pls_n_raw <- plsr(N ~ ., ncomp = 10, data = val_n_raw, validation = "CV")
+vip_n_raw <- VIP(pls_n_raw, opt.comp = selectNcomp(pls_n_raw, method = "onesigma", plot = TRUE), p = dim(pls_n_raw$coef)[1])
+ncomp_n <- data.frame(selectNcomp(pls_n_raw, method = "onesigma", plot = TRUE))
+rmse_n_raw <- RMSEP(pls_n_raw)
+rmse_n_raw <- rmse_n_raw[["val"]]
+rmse_n_raw <- rmse_n_raw[1, 1, (selectNcomp(pls_n_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_n <- data.frame(rmse_n_raw)
+rdp_n_raw <- sd(datos[[12]])/rmse_n_raw
+rdp_n <- data.frame(rdp_n_raw)
+rm(rmse_n_raw)
+rm(rdp_n_raw)
+rm(val_n_raw)
+vip_n <- data.frame(vip_n_raw)
+rm(vip_n_raw)
+
+#First derivative
+
+val_ph_dv <- bind_cols(datos[2], lista[2])
+pls_ph_dv <- plsr(pH ~ ., ncomp = 10, data = val_ph_dv, validation = "CV")
+vip_ph_dv <- VIP(pls_ph_dv, opt.comp = selectNcomp(pls_ph_dv, method = "onesigma", plot = TRUE), p = dim(pls_ph_dv$coef)[1])
+ncomp_ph[2] <- selectNcomp(pls_ph_dv, method = "onesigma", plot = TRUE)
+rmse_ph_dv <- RMSEP(pls_ph_dv)
+rmse_ph_dv <- rmse_ph_dv[["val"]]
+rmse_ph_dv <- rmse_ph_dv[1, 1, (selectNcomp(pls_ph_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_ph[2] <- rmse_ph_dv
+rdp_ph_dv <- sd(datos[[2]])/rmse_ph_dv
+rdp_ph[2] <- rdp_ph_dv
+rm(rmse_ph_dv)
+rm(rdp_ph_dv)
+rm(val_ph_dv)
+vip_ph[2] <- vip_ph_dv
+rm(vip_ph_dv)
+
+val_ca_dv <- bind_cols(datos[8], lista[2])
+pls_ca_dv <- plsr(Ca ~ ., ncomp = 10, data = val_ca_dv, validation = "CV")
+vip_ca_dv <- VIP(pls_ca_dv, opt.comp = selectNcomp(pls_ca_dv, method = "onesigma", plot = TRUE), p = dim(pls_ca_dv$coef)[1])
+ncomp_ca[2] <- selectNcomp(pls_ca_dv, method = "onesigma", plot = TRUE)
+rmse_ca_dv <- RMSEP(pls_ca_dv)
+rmse_ca_dv <- rmse_ca_dv[["val"]]
+rmse_ca_dv <- rmse_ca_dv[1, 1, (selectNcomp(pls_ca_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_ca[2] <- rmse_ca_dv
+rdp_ca_dv <- sd(datos[[8]])/rmse_ca_dv
+rdp_ca[2] <- rdp_ca_dv
+rm(rmse_ca_dv)
+rm(rdp_ca_dv)
+rm(val_ca_dv)
+vip_ca[2] <- vip_ca_dv
+rm(vip_ca_dv)
+
+val_mg_dv <- bind_cols(datos[9], lista[2])
+pls_mg_dv <- plsr(Mg ~ ., ncomp = 10, data = val_mg_dv, validation = "CV")
+vip_mg_dv <- VIP(pls_mg_dv, opt.comp = selectNcomp(pls_mg_dv, method = "onesigma", plot = TRUE), p = dim(pls_mg_dv$coef)[1])
+ncomp_mg[2] <- selectNcomp(pls_mg_dv, method = "onesigma", plot = TRUE)
+rmse_mg_dv <- RMSEP(pls_mg_dv)
+rmse_mg_dv <- rmse_mg_dv[["val"]]
+rmse_mg_dv <- rmse_mg_dv[1, 1, (selectNcomp(pls_mg_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_mg[2] <- rmse_mg_dv
+rdp_mg_dv <- sd(datos[[9]])/rmse_mg_dv
+rdp_mg[2] <- rdp_mg_dv
+rm(rmse_mg_dv)
+rm(rdp_mg_dv)
+rm(val_mg_dv)
+vip_mg[2] <- vip_mg_dv
+rm(vip_mg_dv)
+
+val_k_dv <- bind_cols(datos[10], lista[2])
+pls_k_dv <- plsr(K ~ ., ncomp = 10, data = val_k_dv, validation = "CV")
+vip_k_dv <- VIP(pls_k_dv, opt.comp = selectNcomp(pls_k_dv, method = "onesigma", plot = TRUE), p = dim(pls_k_dv$coef)[1])
+ncomp_k[2] <- selectNcomp(pls_k_dv, method = "onesigma", plot = TRUE)
+rmse_k_dv <- RMSEP(pls_k_dv)
+rmse_k_dv <- rmse_k_dv[["val"]]
+rmse_k_dv <- rmse_k_dv[1, 1, (selectNcomp(pls_k_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_k[2] <- rmse_k_dv
+rdp_k_dv <- sd(datos[[10]])/rmse_k_dv
+rdp_k[2] <- rdp_k_dv
+rm(rmse_k_dv)
+rm(rdp_k_dv)
+rm(val_k_dv)
+vip_k[2] <- vip_k_dv
+rm(vip_k_dv)
+
+val_na_dv <- bind_cols(datos[11], lista[2])
+pls_na_dv <- plsr(Na ~ ., ncomp = 10, data = val_na_dv, validation = "CV")
+vip_na_dv <- VIP(pls_na_dv, opt.comp = selectNcomp(pls_na_dv, method = "onesigma", plot = TRUE), p = dim(pls_na_dv$coef)[1])
+ncomp_na[2] <- selectNcomp(pls_na_dv, method = "onesigma", plot = TRUE)
+rmse_na_dv <- RMSEP(pls_na_dv)
+rmse_na_dv <- rmse_na_dv[["val"]]
+rmse_na_dv <- rmse_na_dv[1, 1, (selectNcomp(pls_na_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_na[2] <- rmse_na_dv
+rdp_na_dv <- sd(datos[[11]])/rmse_na_dv
+rdp_na[2] <- rdp_na_dv
+rm(rmse_na_dv)
+rm(rdp_na_dv)
+rm(val_na_dv)
+vip_na[2] <- vip_na_dv
+rm(vip_na_dv)
+
+val_n_dv <- bind_cols(datos[12], lista[2])
+pls_n_dv <- plsr(N ~ ., ncomp = 10, data = val_n_dv, validation = "CV")
+vip_n_dv <- VIP(pls_n_dv, opt.comp = selectNcomp(pls_n_dv, method = "onesigma", plot = TRUE), p = dim(pls_n_dv$coef)[1])
+ncomp_n[2] <- selectNcomp(pls_n_dv, method = "onesigma", plot = TRUE)
+rmse_n_dv <- RMSEP(pls_n_dv)
+rmse_n_dv <- rmse_n_dv[["val"]]
+rmse_n_dv <- rmse_n_dv[1, 1, (selectNcomp(pls_n_dv, method = "onesigma", plot = TRUE)+1)]
+rmse_n[2] <- rmse_n_dv
+rdp_n_dv <- sd(datos[[12]])/rmse_n_dv
+rdp_n[2] <- rdp_n_dv
+rm(rmse_n_dv)
+rm(rdp_n_dv)
+rm(val_n_dv)
+vip_n[2] <- vip_n_dv
+rm(vip_n_dv)
+
+#Absorbance
+
+val_ph_abs <- bind_cols(datos[2], lista[3])
+pls_ph_abs <- plsr(pH ~ ., ncomp = 10, data = val_ph_abs, validation = "CV")
+vip_ph_abs <- VIP(pls_ph_abs, opt.comp = selectNcomp(pls_ph_abs, method = "onesigma", plot = TRUE), p = dim(pls_ph_abs$coef)[1])
+ncomp_ph[3] <- selectNcomp(pls_ph_abs, method = "onesigma", plot = TRUE)
+rmse_ph_abs <- RMSEP(pls_ph_abs)
+rmse_ph_abs <- rmse_ph_abs[["val"]]
+rmse_ph_abs <- rmse_ph_abs[1, 1, (selectNcomp(pls_ph_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_ph[3] <- rmse_ph_abs
+rdp_ph_abs <- sd(datos[[2]])/rmse_ph_abs
+rdp_ph[3] <- rdp_ph_abs
+rm(rmse_ph_abs)
+rm(rdp_ph_abs)
+rm(val_ph_abs)
+vip_ph[3] <- vip_ph_abs
+rm(vip_ph_abs)
+
+val_ca_abs <- bind_cols(datos[8], lista[3])
+pls_ca_abs <- plsr(Ca ~ ., ncomp = 10, data = val_ca_abs, validation = "CV")
+vip_ca_abs <- VIP(pls_ca_abs, opt.comp = selectNcomp(pls_ca_abs, method = "onesigma", plot = TRUE), p = dim(pls_ca_abs$coef)[1])
+ncomp_ca[3] <- selectNcomp(pls_ca_abs, method = "onesigma", plot = TRUE)
+rmse_ca_abs <- RMSEP(pls_ca_abs)
+rmse_ca_abs <- rmse_ca_abs[["val"]]
+rmse_ca_abs <- rmse_ca_abs[1, 1, (selectNcomp(pls_ca_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_ca[3] <- rmse_ca_abs
+rdp_ca_abs <- sd(datos[[8]])/rmse_ca_abs
+rdp_ca[3] <- rdp_ca_abs
+rm(rmse_ca_abs)
+rm(rdp_ca_abs)
+rm(val_ca_abs)
+vip_ca[3] <- vip_ca_abs
+rm(vip_ca_abs)
+
+val_mg_abs <- bind_cols(datos[9], lista[3])
+pls_mg_abs <- plsr(Mg ~ ., ncomp = 10, data = val_mg_abs, validation = "CV")
+vip_mg_abs <- VIP(pls_mg_abs, opt.comp = selectNcomp(pls_mg_abs, method = "onesigma", plot = TRUE), p = dim(pls_mg_abs$coef)[1])
+ncomp_mg[3] <- selectNcomp(pls_mg_abs, method = "onesigma", plot = TRUE)
+rmse_mg_abs <- RMSEP(pls_mg_abs)
+rmse_mg_abs <- rmse_mg_abs[["val"]]
+rmse_mg_abs <- rmse_mg_abs[1, 1, (selectNcomp(pls_mg_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_mg[3] <- rmse_mg_abs
+rdp_mg_abs <- sd(datos[[9]])/rmse_mg_abs
+rdp_mg[3] <- rdp_mg_abs
+rm(rmse_mg_abs)
+rm(rdp_mg_abs)
+rm(val_mg_abs)
+vip_mg[3] <- vip_mg_abs
+rm(vip_mg_abs)
+
+val_k_abs <- bind_cols(datos[10], lista[3])
+pls_k_abs <- plsr(K ~ ., ncomp = 10, data = val_k_abs, validation = "CV")
+vip_k_abs <- VIP(pls_k_abs, opt.comp = selectNcomp(pls_k_abs, method = "onesigma", plot = TRUE), p = dim(pls_k_abs$coef)[1])
+ncomp_k[3] <- selectNcomp(pls_k_abs, method = "onesigma", plot = TRUE)
+rmse_k_abs <- RMSEP(pls_k_abs)
+rmse_k_abs <- rmse_k_abs[["val"]]
+rmse_k_abs <- rmse_k_abs[1, 1, (selectNcomp(pls_k_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_k[3] <- rmse_k_abs
+rdp_k_abs <- sd(datos[[10]])/rmse_k_abs
+rdp_k[3] <- rdp_k_abs
+rm(rmse_k_abs)
+rm(rdp_k_abs)
+rm(val_k_abs)
+vip_k[3] <- vip_k_abs
+rm(vip_k_abs)
+
+val_na_abs <- bind_cols(datos[11], lista[3])
+pls_na_abs <- plsr(Na ~ ., ncomp = 10, data = val_na_abs, validation = "CV")
+vip_na_abs <- VIP(pls_na_abs, opt.comp = selectNcomp(pls_na_abs, method = "onesigma", plot = TRUE), p = dim(pls_na_abs$coef)[1])
+ncomp_na[3] <- selectNcomp(pls_na_abs, method = "onesigma", plot = TRUE)
+rmse_na_abs <- RMSEP(pls_na_abs)
+rmse_na_abs <- rmse_na_abs[["val"]]
+rmse_na_abs <- rmse_na_abs[1, 1, (selectNcomp(pls_na_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_na[3] <- rmse_na_abs
+rdp_na_abs <- sd(datos[[11]])/rmse_na_abs
+rdp_na[3] <- rdp_na_abs
+rm(rmse_na_abs)
+rm(rdp_na_abs)
+rm(val_na_abs)
+vip_na[3] <- vip_na_abs
+rm(vip_na_abs)
+
+val_n_abs <- bind_cols(datos[12], lista[3])
+pls_n_abs <- plsr(N ~ ., ncomp = 10, data = val_n_abs, validation = "CV")
+vip_n_abs <- VIP(pls_n_abs, opt.comp = selectNcomp(pls_n_abs, method = "onesigma", plot = TRUE), p = dim(pls_n_abs$coef)[1])
+ncomp_n[3] <- selectNcomp(pls_n_abs, method = "onesigma", plot = TRUE)
+rmse_n_abs <- RMSEP(pls_n_abs)
+rmse_n_abs <- rmse_n_abs[["val"]]
+rmse_n_abs <- rmse_n_abs[1, 1, (selectNcomp(pls_n_abs, method = "onesigma", plot = TRUE)+1)]
+rmse_n[3] <- rmse_n_abs
+rdp_n_abs <- sd(datos[[12]])/rmse_n_abs
+rdp_n[3] <- rdp_n_abs
+rm(rmse_n_abs)
+rm(rdp_n_abs)
+rm(val_n_abs)
+vip_n[3] <- vip_n_abs
+rm(vip_n_abs)
+
+#Continuum Removal
+
+val_ph_cr <- bind_cols(datos[2], lista[4])
+pls_ph_cr <- plsr(pH ~ ., ncomp = 10, data = val_ph_cr, validation = "CV")
+vip_ph_cr <- VIP(pls_ph_cr, opt.comp = selectNcomp(pls_ph_cr, method = "onesigma", plot = TRUE), p = dim(pls_ph_cr$coef)[1])
+ncomp_ph[4] <- selectNcomp(pls_ph_cr, method = "onesigma", plot = TRUE)
+rmse_ph_cr <- RMSEP(pls_ph_cr)
+rmse_ph_cr <- rmse_ph_cr[["val"]]
+rmse_ph_cr <- rmse_ph_cr[1, 1, (selectNcomp(pls_ph_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_ph[4] <- rmse_ph_cr
+rdp_ph_cr <- sd(datos[[2]])/rmse_ph_cr
+rdp_ph[4] <- rdp_ph_cr
+rm(rmse_ph_cr)
+rm(rdp_ph_cr)
+rm(val_ph_cr)
+vip_ph[4] <- vip_ph_cr
+rm(vip_ph_cr)
+
+val_ca_cr <- bind_cols(datos[8], lista[4])
+pls_ca_cr <- plsr(Ca ~ ., ncomp = 10, data = val_ca_cr, validation = "CV")
+vip_ca_cr <- VIP(pls_ca_cr, opt.comp = selectNcomp(pls_ca_cr, method = "onesigma", plot = TRUE), p = dim(pls_ca_cr$coef)[1])
+ncomp_ca[4] <- selectNcomp(pls_ca_cr, method = "onesigma", plot = TRUE)
+rmse_ca_cr <- RMSEP(pls_ca_cr)
+rmse_ca_cr <- rmse_ca_cr[["val"]]
+rmse_ca_cr <- rmse_ca_cr[1, 1, (selectNcomp(pls_ca_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_ca[4] <- rmse_ca_cr
+rdp_ca_cr <- sd(datos[[8]])/rmse_ca_cr
+rdp_ca[4] <- rdp_ca_cr
+rm(rmse_ca_cr)
+rm(rdp_ca_cr)
+rm(val_ca_cr)
+vip_ca[4] <- vip_ca_cr
+rm(vip_ca_cr)
+
+val_mg_cr <- bind_cols(datos[9], lista[4])
+pls_mg_cr <- plsr(Mg ~ ., ncomp = 10, data = val_mg_cr, validation = "CV")
+vip_mg_cr <- VIP(pls_mg_cr, opt.comp = selectNcomp(pls_mg_cr, method = "onesigma", plot = TRUE), p = dim(pls_mg_cr$coef)[1])
+ncomp_mg[4] <- selectNcomp(pls_mg_cr, method = "onesigma", plot = TRUE)
+rmse_mg_cr <- RMSEP(pls_mg_cr)
+rmse_mg_cr <- rmse_mg_cr[["val"]]
+rmse_mg_cr <- rmse_mg_cr[1, 1, (selectNcomp(pls_mg_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_mg[4] <- rmse_mg_cr
+rdp_mg_cr <- sd(datos[[9]])/rmse_mg_cr
+rdp_mg[4] <- rdp_mg_cr
+rm(rmse_mg_cr)
+rm(rdp_mg_cr)
+rm(val_mg_cr)
+vip_mg[4] <- vip_mg_cr
+rm(vip_mg_cr)
+
+val_k_cr <- bind_cols(datos[10], lista[4])
+pls_k_cr <- plsr(K ~ ., ncomp = 10, data = val_k_cr, validation = "CV")
+vip_k_cr <- VIP(pls_k_cr, opt.comp = selectNcomp(pls_k_cr, method = "onesigma", plot = TRUE), p = dim(pls_k_cr$coef)[1])
+ncomp_k[4] <- selectNcomp(pls_k_cr, method = "onesigma", plot = TRUE)
+rmse_k_cr <- RMSEP(pls_k_cr)
+rmse_k_cr <- rmse_k_cr[["val"]]
+rmse_k_cr <- rmse_k_cr[1, 1, (selectNcomp(pls_k_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_k[4] <- rmse_k_cr
+rdp_k_cr <- sd(datos[[10]])/rmse_k_cr
+rdp_k[4] <- rdp_k_cr
+rm(rmse_k_cr)
+rm(rdp_k_cr)
+rm(val_k_cr)
+vip_k[4] <- vip_k_cr
+rm(vip_k_cr)
+
+val_na_cr <- bind_cols(datos[11], lista[4])
+pls_na_cr <- plsr(Na ~ ., ncomp = 10, data = val_na_cr, validation = "CV")
+vip_na_cr <- VIP(pls_na_cr, opt.comp = selectNcomp(pls_na_cr, method = "onesigma", plot = TRUE), p = dim(pls_na_cr$coef)[1])
+ncomp_na[4] <- selectNcomp(pls_na_cr, method = "onesigma", plot = TRUE)
+rmse_na_cr <- RMSEP(pls_na_cr)
+rmse_na_cr <- rmse_na_cr[["val"]]
+rmse_na_cr <- rmse_na_cr[1, 1, (selectNcomp(pls_na_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_na[4] <- rmse_na_cr
+rdp_na_cr <- sd(datos[[11]])/rmse_na_cr
+rdp_na[4] <- rdp_na_cr
+rm(rmse_na_cr)
+rm(rdp_na_cr)
+rm(val_na_cr)
+vip_na[4] <- vip_na_cr
+rm(vip_na_cr)
+
+val_n_cr <- bind_cols(datos[12], lista[4])
+pls_n_cr <- plsr(N ~ ., ncomp = 10, data = val_n_cr, validation = "CV")
+vip_n_cr <- VIP(pls_n_cr, opt.comp = selectNcomp(pls_n_cr, method = "onesigma", plot = TRUE), p = dim(pls_n_cr$coef)[1])
+ncomp_n[4] <- selectNcomp(pls_n_cr, method = "onesigma", plot = TRUE)
+rmse_n_cr <- RMSEP(pls_n_cr)
+rmse_n_cr <- rmse_n_cr[["val"]]
+rmse_n_cr <- rmse_n_cr[1, 1, (selectNcomp(pls_n_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_n[4] <- rmse_n_cr
+rdp_n_cr <- sd(datos[[12]])/rmse_n_cr
+rdp_n[4] <- rdp_n_cr
+rm(rmse_n_cr)
+rm(rdp_n_cr)
+rm(val_n_cr)
+vip_n[4] <- vip_n_cr
+rm(vip_n_cr)
+
+#Multiplicative Scatter Correction
+
+val_ph_msc <- bind_cols(datos[2], lista[5])
+pls_ph_msc <- plsr(pH ~ ., ncomp = 10, data = val_ph_msc, validation = "CV")
+vip_ph_msc <- VIP(pls_ph_msc, opt.comp = selectNcomp(pls_ph_msc, method = "onesigma", plot = TRUE), p = dim(pls_ph_msc$coef)[1])
+ncomp_ph[5] <- selectNcomp(pls_ph_msc, method = "onesigma", plot = TRUE)
+rmse_ph_msc <- RMSEP(pls_ph_msc)
+rmse_ph_msc <- rmse_ph_msc[["val"]]
+rmse_ph_msc <- rmse_ph_msc[1, 1, (selectNcomp(pls_ph_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_ph[5] <- rmse_ph_msc
+rdp_ph_msc <- sd(datos[[2]])/rmse_ph_msc
+rdp_ph[5] <- rdp_ph_msc
+rm(rmse_ph_msc)
+rm(rdp_ph_msc)
+rm(val_ph_msc)
+vip_ph[5] <- vip_ph_msc
+rm(vip_ph_msc)
+
+val_ca_msc <- bind_cols(datos[8], lista[5])
+pls_ca_msc <- plsr(Ca ~ ., ncomp = 10, data = val_ca_msc, validation = "CV")
+vip_ca_msc <- VIP(pls_ca_msc, opt.comp = selectNcomp(pls_ca_msc, method = "onesigma", plot = TRUE), p = dim(pls_ca_msc$coef)[1])
+ncomp_ca[5] <- selectNcomp(pls_ca_msc, method = "onesigma", plot = TRUE)
+rmse_ca_msc <- RMSEP(pls_ca_msc)
+rmse_ca_msc <- rmse_ca_msc[["val"]]
+rmse_ca_msc <- rmse_ca_msc[1, 1, (selectNcomp(pls_ca_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_ca[5] <- rmse_ca_msc
+rdp_ca_msc <- sd(datos[[8]])/rmse_ca_msc
+rdp_ca[5] <- rdp_ca_msc
+rm(rmse_ca_msc)
+rm(rdp_ca_msc)
+rm(val_ca_msc)
+vip_ca[5] <- vip_ca_msc
+rm(vip_ca_msc)
+
+val_mg_msc <- bind_cols(datos[9], lista[5])
+pls_mg_msc <- plsr(Mg ~ ., ncomp = 10, data = val_mg_msc, validation = "CV")
+vip_mg_msc <- VIP(pls_mg_msc, opt.comp = selectNcomp(pls_mg_msc, method = "onesigma", plot = TRUE), p = dim(pls_mg_msc$coef)[1])
+ncomp_mg[5] <- selectNcomp(pls_mg_msc, method = "onesigma", plot = TRUE)
+rmse_mg_msc <- RMSEP(pls_mg_msc)
+rmse_mg_msc <- rmse_mg_msc[["val"]]
+rmse_mg_msc <- rmse_mg_msc[1, 1, (selectNcomp(pls_mg_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_mg[5] <- rmse_mg_msc
+rdp_mg_msc <- sd(datos[[9]])/rmse_mg_msc
+rdp_mg[5] <- rdp_mg_msc
+rm(rmse_mg_msc)
+rm(rdp_mg_msc)
+rm(val_mg_msc)
+vip_mg[5] <- vip_mg_msc
+rm(vip_mg_msc)
+
+val_k_msc <- bind_cols(datos[10], lista[5])
+pls_k_msc <- plsr(K ~ ., ncomp = 10, data = val_k_msc, validation = "CV")
+vip_k_msc <- VIP(pls_k_msc, opt.comp = selectNcomp(pls_k_msc, method = "onesigma", plot = TRUE), p = dim(pls_k_msc$coef)[1])
+ncomp_k[5] <- selectNcomp(pls_k_msc, method = "onesigma", plot = TRUE)
+rmse_k_msc <- RMSEP(pls_k_msc)
+rmse_k_msc <- rmse_k_msc[["val"]]
+rmse_k_msc <- rmse_k_msc[1, 1, (selectNcomp(pls_k_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_k[5] <- rmse_k_msc
+rdp_k_msc <- sd(datos[[10]])/rmse_k_msc
+rdp_k[5] <- rdp_k_msc
+rm(rmse_k_msc)
+rm(rdp_k_msc)
+rm(val_k_msc)
+vip_k[5] <- vip_k_msc
+rm(vip_k_msc)
+
+val_na_msc <- bind_cols(datos[11], lista[5])
+pls_na_msc <- plsr(Na ~ ., ncomp = 10, data = val_na_msc, validation = "CV")
+vip_na_msc <- VIP(pls_na_msc, opt.comp = selectNcomp(pls_na_msc, method = "onesigma", plot = TRUE), p = dim(pls_na_msc$coef)[1])
+ncomp_na[5] <- selectNcomp(pls_na_msc, method = "onesigma", plot = TRUE)
+rmse_na_msc <- RMSEP(pls_na_msc)
+rmse_na_msc <- rmse_na_msc[["val"]]
+rmse_na_msc <- rmse_na_msc[1, 1, (selectNcomp(pls_na_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_na[5] <- rmse_na_msc
+rdp_na_msc <- sd(datos[[11]])/rmse_na_msc
+rdp_na[5] <- rdp_na_msc
+rm(rmse_na_msc)
+rm(rdp_na_msc)
+rm(val_na_msc)
+vip_na[5] <- vip_na_msc
+rm(vip_na_msc)
+
+val_n_msc <- bind_cols(datos[12], lista[5])
+pls_n_msc <- plsr(N ~ ., ncomp = 10, data = val_n_msc, validation = "CV")
+vip_n_msc <- VIP(pls_n_msc, opt.comp = selectNcomp(pls_n_msc, method = "onesigma", plot = TRUE), p = dim(pls_n_msc$coef)[1])
+ncomp_n[5] <- selectNcomp(pls_n_msc, method = "onesigma", plot = TRUE)
+rmse_n_msc <- RMSEP(pls_n_msc)
+rmse_n_msc <- rmse_n_msc[["val"]]
+rmse_n_msc <- rmse_n_msc[1, 1, (selectNcomp(pls_n_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_n[5] <- rmse_n_msc
+rdp_n_msc <- sd(datos[[12]])/rmse_n_msc
+rdp_n[5] <- rdp_n_msc
+rm(rmse_n_msc)
+rm(rdp_n_msc)
+rm(val_n_msc)
+vip_n[5] <- vip_n_msc
+rm(vip_n_msc)
+
+#Standard Normal Variate
+
+val_ph_snv <- bind_cols(datos[2], lista[6])
+pls_ph_snv <- plsr(pH ~ ., ncomp = 10, data = val_ph_snv, validation = "CV")
+vip_ph_snv <- VIP(pls_ph_snv, opt.comp = selectNcomp(pls_ph_snv, method = "onesigma", plot = TRUE), p = dim(pls_ph_snv$coef)[1])
+ncomp_ph[6] <- selectNcomp(pls_ph_snv, method = "onesigma", plot = TRUE)
+rmse_ph_snv <- RMSEP(pls_ph_snv)
+rmse_ph_snv <- rmse_ph_snv[["val"]]
+rmse_ph_snv <- rmse_ph_snv[1, 1, (selectNcomp(pls_ph_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_ph[6] <- rmse_ph_snv
+rdp_ph_snv <- sd(datos[[2]])/rmse_ph_snv
+rdp_ph[6] <- rdp_ph_snv
+rm(rmse_ph_snv)
+rm(rdp_ph_snv)
+rm(val_ph_snv)
+vip_ph[6] <- vip_ph_snv
+rm(vip_ph_snv)
+
+val_ca_snv <- bind_cols(datos[8], lista[6])
+pls_ca_snv <- plsr(Ca ~ ., ncomp = 10, data = val_ca_snv, validation = "CV")
+vip_ca_snv <- VIP(pls_ca_snv, opt.comp = selectNcomp(pls_ca_snv, method = "onesigma", plot = TRUE), p = dim(pls_ca_snv$coef)[1])
+ncomp_ca[6] <- selectNcomp(pls_ca_snv, method = "onesigma", plot = TRUE)
+rmse_ca_snv <- RMSEP(pls_ca_snv)
+rmse_ca_snv <- rmse_ca_snv[["val"]]
+rmse_ca_snv <- rmse_ca_snv[1, 1, (selectNcomp(pls_ca_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_ca[6] <- rmse_ca_snv
+rdp_ca_snv <- sd(datos[[8]])/rmse_ca_snv
+rdp_ca[6] <- rdp_ca_snv
+rm(rmse_ca_snv)
+rm(rdp_ca_snv)
+rm(val_ca_snv)
+vip_ca[6] <- vip_ca_snv
+rm(vip_ca_snv)
+
+val_mg_snv <- bind_cols(datos[9], lista[6])
+pls_mg_snv <- plsr(Mg ~ ., ncomp = 10, data = val_mg_snv, validation = "CV")
+vip_mg_snv <- VIP(pls_mg_snv, opt.comp = selectNcomp(pls_mg_snv, method = "onesigma", plot = TRUE), p = dim(pls_mg_snv$coef)[1])
+ncomp_mg[6] <- selectNcomp(pls_mg_snv, method = "onesigma", plot = TRUE)
+rmse_mg_snv <- RMSEP(pls_mg_snv)
+rmse_mg_snv <- rmse_mg_snv[["val"]]
+rmse_mg_snv <- rmse_mg_snv[1, 1, (selectNcomp(pls_mg_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_mg[6] <- rmse_mg_snv
+rdp_mg_snv <- sd(datos[[9]])/rmse_mg_snv
+rdp_mg[6] <- rdp_mg_snv
+rm(rmse_mg_snv)
+rm(rdp_mg_snv)
+rm(val_mg_snv)
+vip_mg[6] <- vip_mg_snv
+rm(vip_mg_snv)
+
+val_k_snv <- bind_cols(datos[10], lista[6])
+pls_k_snv <- plsr(K ~ ., ncomp = 10, data = val_k_snv, validation = "CV")
+vip_k_snv <- VIP(pls_k_snv, opt.comp = selectNcomp(pls_k_snv, method = "onesigma", plot = TRUE), p = dim(pls_k_snv$coef)[1])
+ncomp_k[6] <- selectNcomp(pls_k_snv, method = "onesigma", plot = TRUE)
+rmse_k_snv <- RMSEP(pls_k_snv)
+rmse_k_snv <- rmse_k_snv[["val"]]
+rmse_k_snv <- rmse_k_snv[1, 1, (selectNcomp(pls_k_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_k[6] <- rmse_k_snv
+rdp_k_snv <- sd(datos[[10]])/rmse_k_snv
+rdp_k[6] <- rdp_k_snv
+rm(rmse_k_snv)
+rm(rdp_k_snv)
+rm(val_k_snv)
+vip_k[6] <- vip_k_snv
+rm(vip_k_snv)
+
+val_na_snv <- bind_cols(datos[11], lista[6])
+pls_na_snv <- plsr(Na ~ ., ncomp = 10, data = val_na_snv, validation = "CV")
+vip_na_snv <- VIP(pls_na_snv, opt.comp = selectNcomp(pls_na_snv, method = "onesigma", plot = TRUE), p = dim(pls_na_snv$coef)[1])
+ncomp_na[6] <- selectNcomp(pls_na_snv, method = "onesigma", plot = TRUE)
+rmse_na_snv <- RMSEP(pls_na_snv)
+rmse_na_snv <- rmse_na_snv[["val"]]
+rmse_na_snv <- rmse_na_snv[1, 1, (selectNcomp(pls_na_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_na[6] <- rmse_na_snv
+rdp_na_snv <- sd(datos[[11]])/rmse_na_snv
+rdp_na[6] <- rdp_na_snv
+rm(rmse_na_snv)
+rm(rdp_na_snv)
+rm(val_na_snv)
+vip_na[6] <- vip_na_snv
+rm(vip_na_snv)
+
+val_n_snv <- bind_cols(datos[12], lista[6])
+pls_n_snv <- plsr(N ~ ., ncomp = 10, data = val_n_snv, validation = "CV")
+vip_n_snv <- VIP(pls_n_snv, opt.comp = selectNcomp(pls_n_snv, method = "onesigma", plot = TRUE), p = dim(pls_n_snv$coef)[1])
+ncomp_n[6] <- selectNcomp(pls_n_snv, method = "onesigma", plot = TRUE)
+rmse_n_snv <- RMSEP(pls_n_snv)
+rmse_n_snv <- rmse_n_snv[["val"]]
+rmse_n_snv <- rmse_n_snv[1, 1, (selectNcomp(pls_n_snv, method = "onesigma", plot = TRUE)+1)]
+rmse_n[6] <- rmse_n_snv
+rdp_n_snv <- sd(datos[[12]])/rmse_n_snv
+rdp_n[6] <- rdp_n_snv
+rm(rmse_n_snv)
+rm(rdp_n_snv)
+rm(val_n_snv)
+vip_n[6] <- vip_n_snv
+rm(vip_n_snv)
+
+#Nombres variables
+#MO
+
+names(ncomp_ph) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_ph) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_ph) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_ph) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_ca) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_ca) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_ca) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_ca) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_mg) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_mg) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_mg) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_mg) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_k) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_k) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_k) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_k) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_na) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_na) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_na) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_na) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_n) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_n) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_n) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_n) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+#VALIDACION
+
+val_mo <- bind_cols(datos[[5]], pls_mo_abs[["validation"]][["pred"]][, , 9])
+names(val_mo) <- c("obs", "pred")
+plot(val_mo)
+val_carb <- bind_cols(datos[[7]], pls_carb_msc[["validation"]][["pred"]][, , 9])
+names(val_carb) <- c("obs", "pred")
+plot(val_carb)
+val_clay <- bind_cols(datos[[14]][-45], pls_clay_abs[["validation"]][["pred"]][, , 6])
+names(val_clay) <- c("obs", "pred")
+plot(val_clay)
+
+
+val_mo[,3] <- val_mo[,2] - mean(val_mo[,1])
+val_mo[,3] <- val_mo[,3]^2
+val_mo[4] <- val_mo[1] - mean(val_mo[,1])
+val_mo[,4] <- val_mo[,4]^2
+
+mean(val_mo[,3])/mean(val_mo[,4])
+
+range(val_mo$pred)
+cor(val_mo$obs, val_mo$pred)^2
+lm_valmo<-lm(data = val_mo, pred~obs)
+resid_mo <- abs(val_mo$obs-val_mo$pred)
+resid_mo <- discretize(abs(resid_mo), method = "fixed", breaks = c(0, 2.5, 5, 7.5, 10, 20))
+resid2_mo <- factor(resid_mo, levels=c("[0,2.5)",  "[2.5,5)",  "[5,7.5)",  "[7.5,10)", "[10,20]"), labels=c("0-2", "2.5-5", "5-7.5", "7.5-10", "Más de 10"))
+rel_mo <- c("0-2" = "#ffffb2", "2.5-5" = "#fecc5c", "5-7.5" = "#fd8d3c", "7.5-10" = "#f03b20", "Más de 10" = "#bd0026")
+g_valmo <- ggplot(val_mo, aes(x = obs, y = pred)) + geom_point(aes(colour = resid2_mo)) + 
+  geom_abline(aes(intercept=lm_valmo[["coefficients"]][["(Intercept)"]], slope=lm_valmo[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") + scale_color_manual(values = rel_mo) + 
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank()) +
+  scale_x_continuous(name="Observado", limits=c(-5, 45)) + scale_y_continuous(name="Predicho", limits=c(-5, 45))
+g_valmo
+
+
+
+range(val_carb$obs)
+range(val_carb$pred)
+lm_valca<-lm(data = val_carb, pred~obs)
+resid_ca <- abs(val_carb$obs-val_carb$pred)
+range(abs(resid_ca))
+hist(abs(resid_ca))
+resid_ca <- discretize(abs(resid_ca), method = "fixed", breaks = c(0, 5, 10, 15, 20, 40))
+resid2_ca <- factor(resid_ca, levels=c("[0,5)",  "[5,10)",  "[10,15)",  "[15,20)", "[20,40]"), labels=c("0-5", "5-10", "10-15", "15-20", "Más de 20"))
+rel_ca <- c("0-5" = "#ffffb2", "5-10" = "#fecc5c", "10-15" = "#fd8d3c", "15-20" = "#f03b20", "Más de 20" = "#bd0026")
+g_valca <- ggplot(val_carb, aes(x = obs, y = pred)) + geom_point() + aes(colour = resid2_ca) + 
+  geom_abline(aes(intercept=lm_valca[["coefficients"]][["(Intercept)"]], slope=lm_valca[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") + scale_color_manual(values = rel_ca) + 
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank()) +
+  scale_x_continuous(name="Observado", limits=c(-15, 70)) + scale_y_continuous(name="Predicho", limits=c(-15, 70))
+g_valca
+
+
+range(val_clay$obs)
+range(val_clay$pred)
+lm_valcl<-lm(data = val_clay, pred~obs)
+resid_cl <- abs(val_clay$obs-val_clay$pred)
+range(abs(resid_cl))
+hist(abs(resid_cl))
+resid_cl <- discretize(abs(resid_cl), method = "fixed", breaks = c(0, 5, 10, 15, 20, 40))
+resid2_cl <- factor(resid_cl, levels=c("[0,5)",  "[5,10)",  "[10,15)",  "[15,20)", "[20,40]"), labels=c("0-5", "5-10", "10-15", "15-20", "Más de 20"))
+rel_cl <- c("0-5" = "#fef0d9", "5-10" = "#fdcc8a", "10-15" = "#fc8d59", "15-20" = "#e34a33", "Más de 20" = "#b30000")
+g_valcl <- ggplot(val_clay, aes(x = obs, y = pred)) + geom_point(aes(colour = resid2_cl)) + 
+  geom_abline(aes(intercept=lm_valcl[["coefficients"]][["(Intercept)"]], slope=lm_valcl[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") + scale_color_manual(values = rel_cl) + 
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank()) +
+  scale_x_continuous(name="Observado", limits=c(0, 65)) + scale_y_continuous(name="Predicho", limits=c(0, 65))
+g_valcl
+
+
+#Gráficas VIP
+
+fusmo <- gather(vip_mo, key = "spec", value)
+a <- matrix(nrow = 2051*6)
+a[1:2051, ] <- coln
+a[2052:4102, ] <- coln
+a[4103:6153, ] <- coln
+a[6154:8204, ] <- coln
+a[8205:10255, ] <- coln
+a[10256:12306, ] <- coln
+fusmo <- bind_cols(as.data.frame(as.integer(a)), fusmo)
+range(fusmo[,3], na.rm = T)
+
+#aquí se quedó
+
+fusmo[,4] <- discretize(fusmo$value, method = "fixed",
+                        breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5))
+
+
+colnames(fusmo) <- c("wave", "spec", "value", "label")
+#valor maximo: 0.620078 // valor minimo: -0.7736587
+cols <- c("[0,0.5)" = "#edf8fb", "[0.5,1)" = "#ccece6", "[1,1.5)" = "#99d8c9", "[1.5,2)" = "#66c2a4", 
+          "[2,2.5)" = "#41ae76", "[2.5,3)" = "#238b45", "[3,3.5]" = "#005824")
+
+fusmok <- filter(fusmo, !is.na(value))
+
+gmo <- ggplot(fusmok, aes(x = wave, y = spec, fill = label)) + 
+  geom_raster() + xlab("Longitud de onda (nm)") + ylab("Tratamiento espectral") + scale_fill_manual(values = cols) + 
+  theme(panel.grid.major = element_line(linetype = "blank"), panel.background = element_rect(fill = "gray100")) + 
+  guides(fill=guide_legend(title="")) + scale_x_continuous(breaks=seq(400,2400,200))
+plot(gmo)
+
+#Gráfica carbonatos
+
+fusca <- gather(vip_carb, key = "spec", value)
+fusca <- bind_cols(as.data.frame(as.integer(a)), fusca)
+range(fusca[,3], na.rm = T)
+
+#aquí se quedó
+
+fusca[,4] <- discretize(fusca$value, method = "fixed",
+                        breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5))
+
+
+colnames(fusca) <- c("wave", "spec", "value", "label")
+#valor maximo: 0.620078 // valor minimo: -0.7736587
+
+
+fuscak <- filter(fusca, !is.na(value))
+
+gca <- ggplot(fuscak, aes(x = wave, y = spec, fill = label)) + 
+  geom_raster() + xlab("Longitud de onda (nm)") + ylab("Tratamiento espectral") + scale_fill_manual(values = cols) + 
+  theme(panel.grid.major = element_line(linetype = "blank"), panel.background = element_rect(fill = "gray100")) + 
+  guides(fill=guide_legend(title="VIP")) + scale_x_continuous(breaks=seq(400,2400,200))
+plot(gca)
+
+#Gráfica carbonatos
+
+fuscl <- gather(vip_clay, key = "spec", value)
+fuscl <- bind_cols(as.data.frame(as.integer(a)), fuscl)
+range(fuscl[,3], na.rm = T)
+
+#aquí se quedó
+
+fuscl[,4] <- discretize(fuscl$value, method = "fixed",
+                        breaks = c(0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4))
+
+
+colnames(fuscl) <- c("wave", "spec", "value", "label")
+#valor maximo: 0.620078 // valor minimo: -0.7736587
+
+
+fuscla <- filter(fuscl, !is.na(value))
+
+gcl <- ggplot(fuscla, aes(x = wave, y = spec, fill = label)) + 
+  geom_raster() + xlab("Longitud de onda (nm)") + ylab("Tratamiento espectral") + scale_fill_manual(values = cols) + 
+  theme(panel.grid.major = element_line(linetype = "blank"), panel.background = element_rect(fill = "gray100")) + 
+  guides(fill=guide_legend(title="VIP")) + scale_x_continuous(breaks=seq(400,2400,200))
+plot(gcl)

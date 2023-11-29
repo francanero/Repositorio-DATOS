@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1604599094065.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4100951909",
+    "id" : "B7CB0A34",
+    "lastKnownWriteTime" : 1604922859,
+    "last_content_update" : 1604922859,
+    "path" : "C:/codigos_r/espectrosuelo/nuevos_cod/sffs_rmse.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "204,31",
+        "scrollLine" : "176",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,53 @@
+library(dplyr) #manipulacion datos
+library(pls)
+library(magrittr)
+
+
+setwd("D:/Doctorado/")
+datos <- read.csv2("D:/Doctorado/estadisticos_tesis/datos.csv")
+
+raw <- read.csv2("raw.csv", sep = ",", dec = ".")
+raw <- raw[3:length(raw)]
+cr <- read.csv2("cr.csv", sep = ",", dec = ".")
+cr <- cr[2:length(cr)]
+msc <- read.csv2("msc.csv", sep = ",", dec = ".")
+msc <- msc[2:length(msc)]
+
+names(raw) <- paste0(names(raw), "raw")
+names(cr) <- paste0(names(cr), "cr")
+names(msc) <- paste0(names(msc), "msc")
+db <- bind_cols(raw, cr, msc)
+
+#mo
+
+cal_mo <- bind_cols(datos[5], db)
+pls_mo <- plsr(mo_total ~ ., ncomp = 10, data = cal_mo, validation = "CV")
+ncomp_mo <- selectNcomp(pls_mo, method = "onesigma", plot = TRUE)
+summary(pls_mo)
+rmse_mo <- RMSEP(pls_mo)
+rmse_mo <- rmse_mo[["val"]]
+rmse_mo <- rmse_mo[1, 1, (selectNcomp(pls_mo, method = "onesigma", plot = TRUE)+1)]
+rdp_mo_raw <- sd(datos[[5]])/rmse_mo
+
+#carb
+
+cal_carb <- bind_cols(datos[7], db)
+pls_carb <- plsr(carbonatos ~ ., ncomp = 10, data = cal_carb, validation = "CV")
+ncomp_carb <- selectNcomp(pls_carb, method = "onesigma", plot = TRUE)
+summary(pls_carb)
+rmse_carb <- RMSEP(pls_carb)
+rmse_carb <- rmse_carb[["val"]]
+rmse_carb <- rmse_carb[1, 1, 5]
+rdp_carb_raw <- sd(datos[[7]])/rmse_carb
+
+#carb
+
+cal_clay <- bind_cols(datos[[14]][-45], db[-45,])
+names(cal_clay)[1] <- "Arcilla"
+pls_clay <- plsr(Arcilla ~ ., ncomp = 10, data = cal_clay, validation = "CV")
+ncomp_clay <- selectNcomp(pls_clay, method = "onesigma", plot = TRUE)
+summary(pls_clay)
+rmse_clay <- RMSEP(pls_clay)
+rmse_clay <- rmse_clay[["val"]]
+rmse_clay <- rmse_clay[1, 1, (selectNcomp(pls_clay, method = "onesigma", plot = TRUE)+1)]
+rdp_clay_raw <- sd(datos[[14]][-45])/rmse_clay

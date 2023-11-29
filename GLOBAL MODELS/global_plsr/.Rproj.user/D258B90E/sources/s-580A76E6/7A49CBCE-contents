@@ -1,0 +1,15 @@
+setwd("D:/Doctorado/ss_scaterplot/")
+g.mo <- data.frame(datos[[5]], mod.mo.cr[["learner.model"]][["next.model"]][["learner.model"]][["predicted"]])
+names(g.mo) <- c("obs", "pred")
+write.csv2(g.mo, file = "plsr_mo.csv")
+g.carb <- data.frame(datos[[7]], mod.carb.cr[["learner.model"]][["next.model"]][["learner.model"]][["predicted"]])
+names(g.carb) <- c("obs", "pred")
+write.csv2(g.carb, file = "sfs_carb.csv")
+g.clay <- data.frame(datos[[14]][-45], mod.clay.msc[["learner.model"]][["next.model"]][["learner.model"]][["predicted"]])
+names(g.clay) <- c("obs", "pred")
+write.csv2(g.clay, file = "clay_sffs.csv")
+
+
+g.carb <- data.frame(datos[[7]], pls_carb_cr[["validation"]][["pred"]][, , 8])
+names(g.carb) <- c("obs", "pred")
+write.csv2(g.carb, file = "plsr_carb.csv")

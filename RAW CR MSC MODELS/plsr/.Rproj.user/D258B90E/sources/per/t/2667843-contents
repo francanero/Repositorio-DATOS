@@ -1,0 +1,266 @@
+#DATO IMPORTANTE. ELIMINAMOS LA MUESTRA 45 DE ARCILLA, DADO QUE SU REFLECTIVIDAD HACE REFERENCIA A UNA MUESTRA NO TOMADA
+
+library(dplyr)
+library(pls)
+library(plsVarSel)
+library(tidyr)
+library(caret)
+library(prospectr)
+library(ggplot2)
+library(arules)
+library(ggthemes)
+library(ggThemeAssist)
+library(vctrs)
+library(reshape2)
+library(RColorBrewer)
+
+setwd("D:/Doctorado/spec_lab_r/")
+datos <- read.csv2("D:/Doctorado/estadisticos_tesis/datos.csv")
+
+raw <- read.csv2("raw.csv", sep = ",", dec = ".")
+raw <- raw[3:length(raw)]
+cr <- read.csv2("cr.csv", sep = ",", dec = ".")
+cr <- cr[2:length(cr)]
+msc <- read.csv2("msc.csv", sep = ",", dec = ".")
+msc <- msc[2:length(msc)]
+
+
+lista <- list(raw,cr, msc)
+
+coln <- names(raw)
+coln <- substring(coln, first = 2)
+
+rm(raw)
+
+rm(cr)
+rm(msc)
+
+
+#Raw spectra
+
+val_mo_raw <- bind_cols(datos[5], lista[1])
+pls_mo_raw <- plsr(mo_total ~ ., ncomp = 10, data = val_mo_raw, validation = "CV")
+vip_mo_raw <- VIP(pls_mo_raw, opt.comp = selectNcomp(pls_mo_raw, method = "onesigma", plot = TRUE), p = dim(pls_mo_raw$coef)[1])
+ncomp_mo <- data.frame(selectNcomp(pls_mo_raw, method = "onesigma", plot = TRUE))
+rmse_mo_raw <- RMSEP(pls_mo_raw)
+rmse_mo_raw <- rmse_mo_raw[["val"]]
+rmse_mo_raw <- rmse_mo_raw[1, 1, (selectNcomp(pls_mo_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_mo <- data.frame(rmse_mo_raw)
+rdp_mo_raw <- sd(datos[[5]])/rmse_mo_raw
+rdp_mo <- data.frame(rdp_mo_raw)
+rm(rmse_mo_raw)
+rm(rdp_mo_raw)
+rm(val_mo_raw)
+vip_mo <- data.frame(vip_mo_raw)
+rm(vip_mo_raw)
+
+val_carb_raw <- bind_cols(datos[7], lista[1])
+pls_carb_raw <- plsr(carbonatos ~ ., ncomp = 10, data = val_carb_raw, validation = "CV")
+vip_carb_raw <- VIP(pls_carb_raw, opt.comp = selectNcomp(pls_carb_raw, method = "onesigma", plot = TRUE), p = dim(pls_carb_raw$coef)[1])
+ncomp_carb <- data.frame(selectNcomp(pls_carb_raw, method = "onesigma", plot = TRUE))
+rmse_carb_raw <- RMSEP(pls_carb_raw)
+rmse_carb_raw <- rmse_carb_raw[["val"]]
+rmse_carb_raw <- rmse_carb_raw[1, 1, (selectNcomp(pls_carb_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_carb <- data.frame(rmse_carb_raw)
+rdp_carb_raw <- sd(datos[[7]])/rmse_carb_raw
+rdp_carb <- data.frame(rdp_carb_raw)
+rm(rmse_carb_raw)
+rm(rdp_carb_raw)
+rm(val_carb_raw)
+vip_carb <- data.frame(vip_carb_raw)
+rm(vip_carb_raw)
+
+val_clay_raw <- bind_cols(datos[14], lista[1])
+val_clay_raw <- val_clay_raw[-45,]
+pls_clay_raw <- plsr(Arcilla ~ ., ncomp = 10, data = val_clay_raw, validation = "CV")
+vip_clay_raw <- VIP(pls_clay_raw, opt.comp = selectNcomp(pls_clay_raw, method = "onesigma", plot = TRUE), p = dim(pls_clay_raw$coef)[1])
+ncomp_clay <- data.frame(selectNcomp(pls_clay_raw, method = "onesigma", plot = TRUE))
+rmse_clay_raw <- RMSEP(pls_clay_raw)
+rmse_clay_raw <- rmse_clay_raw[["val"]]
+rmse_clay_raw <- rmse_clay_raw[1, 1, (selectNcomp(pls_clay_raw, method = "onesigma", plot = TRUE)+1)]
+rmse_clay <- data.frame(rmse_clay_raw)
+rdp_clay_raw <- sd(datos[[14]][-45])/rmse_clay_raw
+rdp_clay <- data.frame(rdp_clay_raw)
+rm(rmse_clay_raw)
+rm(rdp_clay_raw)
+rm(val_clay_raw)
+vip_clay <- data.frame(vip_clay_raw)
+rm(vip_clay_raw)
+
+#Continuum Removal
+
+val_mo_cr <- bind_cols(datos[5], lista[2])
+pls_mo_cr <- plsr(mo_total ~ ., ncomp = 10, data = val_mo_cr, validation = "CV")
+vip_mo_cr <- VIP(pls_mo_cr, opt.comp = selectNcomp(pls_mo_cr, method = "onesigma", plot = TRUE), p = dim(pls_mo_cr$coef)[1])
+ncomp_mo[4] <- selectNcomp(pls_mo_cr, method = "onesigma", plot = TRUE)
+rmse_mo_cr <- RMSEP(pls_mo_cr)
+rmse_mo_cr <- rmse_mo_cr[["val"]]
+rmse_mo_cr <- rmse_mo_cr[1, 1, (selectNcomp(pls_mo_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_mo[4] <- rmse_mo_cr
+rdp_mo_cr <- sd(datos[[5]])/rmse_mo_cr
+rdp_mo[4] <- rdp_mo_cr
+rm(rmse_mo_cr)
+rm(rdp_mo_cr)
+rm(val_mo_cr)
+vip_mo[4] <- vip_mo_cr
+rm(vip_mo_cr)
+
+val_carb_cr <- bind_cols(datos[7], lista[2])
+pls_carb_cr <- plsr(carbonatos ~ ., ncomp = 10, data = val_carb_cr, validation = "CV")
+vip_carb_cr <- VIP(pls_carb_cr, opt.comp = selectNcomp(pls_carb_cr, method = "onesigma", plot = TRUE), p = dim(pls_carb_cr$coef)[1])
+ncomp_carb[4] <- selectNcomp(pls_carb_cr, method = "onesigma", plot = TRUE)
+rmse_carb_cr <- RMSEP(pls_carb_cr)
+rmse_carb_cr <- rmse_carb_cr[["val"]]
+rmse_carb_cr <- rmse_carb_cr[1, 1, (selectNcomp(pls_carb_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_carb[4] <- rmse_carb_cr
+rdp_carb_cr <- sd(datos[[7]])/rmse_carb_cr
+rdp_carb[4] <- rdp_carb_cr
+rm(rmse_carb_cr)
+rm(rdp_carb_cr)
+rm(val_carb_cr)
+vip_carb[4] <- vip_carb_cr
+rm(vip_carb_cr)
+
+val_clay_cr <- bind_cols(datos[14], lista[2])
+val_clay_cr <- val_clay_cr[-45,]
+pls_clay_cr <- plsr(Arcilla ~ ., ncomp = 10, data = val_clay_cr, validation = "CV")
+vip_clay_cr <- VIP(pls_clay_cr, opt.comp = selectNcomp(pls_clay_cr, method = "onesigma", plot = TRUE), p = dim(pls_clay_cr$coef)[1])
+ncomp_clay[4] <- selectNcomp(pls_clay_cr, method = "onesigma", plot = TRUE)
+rmse_clay_cr <- RMSEP(pls_clay_cr)
+rmse_clay_cr <- rmse_clay_cr[["val"]]
+rmse_clay_cr <- rmse_clay_cr[1, 1, (selectNcomp(pls_clay_cr, method = "onesigma", plot = TRUE)+1)]
+rmse_clay[4] <- rmse_clay_cr
+rdp_clay_cr <- sd(datos[[14]][-45])/rmse_clay_cr
+rdp_clay[4] <- rdp_clay_cr
+rm(rmse_clay_cr)
+rm(rdp_clay_cr)
+rm(val_clay_cr)
+vip_clay[4] <- vip_clay_cr
+rm(vip_clay_cr)
+
+#Multiplicative Scatter Correction
+
+val_mo_msc <- bind_cols(datos[5], lista[3])
+pls_mo_msc <- plsr(mo_total ~ ., ncomp = 10, data = val_mo_msc, validation = "CV")
+vip_mo_msc <- VIP(pls_mo_msc, opt.comp = selectNcomp(pls_mo_msc, method = "onesigma", plot = TRUE), p = dim(pls_mo_msc$coef)[1])
+ncomp_mo[5] <- selectNcomp(pls_mo_msc, method = "onesigma", plot = TRUE)
+rmse_mo_msc <- RMSEP(pls_mo_msc)
+rmse_mo_msc <- rmse_mo_msc[["val"]]
+rmse_mo_msc <- rmse_mo_msc[1, 1, (selectNcomp(pls_mo_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_mo[5] <- rmse_mo_msc
+rdp_mo_msc <- sd(datos[[5]])/rmse_mo_msc
+rdp_mo[5] <- rdp_mo_msc
+rm(rmse_mo_msc)
+rm(rdp_mo_msc)
+rm(val_mo_msc)
+vip_mo[5] <- vip_mo_msc
+rm(vip_mo_msc)
+
+val_carb_msc <- bind_cols(datos[7], lista[3])
+pls_carb_msc <- plsr(carbonatos ~ ., ncomp = 10, data = val_carb_msc, validation = "CV")
+vip_carb_msc <- VIP(pls_carb_msc, opt.comp = selectNcomp(pls_carb_msc, method = "onesigma", plot = TRUE), p = dim(pls_carb_msc$coef)[1])
+ncomp_carb[5] <- selectNcomp(pls_carb_msc, method = "onesigma", plot = TRUE)
+rmse_carb_msc <- RMSEP(pls_carb_msc)
+rmse_carb_msc <- rmse_carb_msc[["val"]]
+rmse_carb_msc <- rmse_carb_msc[1, 1, (selectNcomp(pls_carb_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_carb[5] <- rmse_carb_msc
+rdp_carb_msc <- sd(datos[[7]])/rmse_carb_msc
+rdp_carb[5] <- rdp_carb_msc
+rm(rmse_carb_msc)
+rm(rdp_carb_msc)
+rm(val_carb_msc)
+vip_carb[5] <- vip_carb_msc
+rm(vip_carb_msc)
+
+val_clay_msc <- bind_cols(datos[14], lista[3])
+val_clay_msc <- val_clay_msc[-45,]
+pls_clay_msc <- plsr(Arcilla ~ ., ncomp = 10, data = val_clay_msc, validation = "CV")
+vip_clay_msc <- VIP(pls_clay_msc, opt.comp = selectNcomp(pls_clay_msc, method = "onesigma", plot = TRUE), p = dim(pls_clay_msc$coef)[1])
+ncomp_clay[5] <- selectNcomp(pls_clay_msc, method = "onesigma", plot = TRUE)
+rmse_clay_msc <- RMSEP(pls_clay_msc)
+rmse_clay_msc <- rmse_clay_msc[["val"]]
+rmse_clay_msc <- rmse_clay_msc[1, 1, (selectNcomp(pls_clay_msc, method = "onesigma", plot = TRUE)+1)]
+rmse_clay[5] <- rmse_clay_msc
+rdp_clay_msc <- sd(datos[[14]][-45])/rmse_clay_msc
+rdp_clay[5] <- rdp_clay_msc
+rm(rmse_clay_msc)
+rm(rdp_clay_msc)
+rm(val_clay_msc)
+vip_clay[5] <- vip_clay_msc
+rm(vip_clay_msc)
+
+#Nombres variables
+#MO
+
+names(ncomp_mo) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_mo) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_mo) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_mo) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_carb) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_carb) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_carb) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_carb) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+names(ncomp_clay) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rmse_clay) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(rdp_clay) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+names(vip_clay) <- c("raw", "dv", "abs", "cr", "msc", "snv")
+
+#VALIDACION
+
+val_mo <- bind_cols(datos[[5]], pls_mo_cr[["validation"]][["pred"]][, , 5])
+names(val_mo) <- c("obs", "pred")
+plot(val_mo)
+val_carb <- bind_cols(datos[[7]], pls_carb_cr[["validation"]][["pred"]][, , 8])
+names(val_carb) <- c("obs", "pred")
+plot(val_carb)
+val_clay <- bind_cols(datos[[14]][-45], pls_clay_cr[["validation"]][["pred"]][, , 5])
+names(val_clay) <- c("obs", "pred")
+plot(val_clay)
+
+range(val_mo$pred)
+cor(val_mo$obs, val_mo$pred)^2
+lm_valmo<-lm(data = val_mo, pred~obs)
+
+g_valmo <- ggplot(val_mo, aes(x = obs, y = pred)) + geom_point() + 
+  geom_abline(aes(intercept=lm_valmo[["coefficients"]][["(Intercept)"]], slope=lm_valmo[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") + 
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank(), panel.grid.major = element_line(colour = "gray80")) +
+  scale_x_continuous(name="Observado", limits=c(-5, 45)) + scale_y_continuous(name="Predicho", limits=c(-5, 45))
+g_valmo
+
+
+
+
+range(val_carb$obs)
+range(val_carb$pred)
+lm_valca<-lm(data = val_carb, pred~obs)
+resid_ca <- abs(val_carb$obs-val_carb$pred)
+g_valca <- ggplot(val_carb, aes(x = obs, y = pred)) + geom_point() + 
+  geom_abline(aes(intercept=lm_valca[["coefficients"]][["(Intercept)"]], slope=lm_valca[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") +
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank(), panel.grid.major = element_line(colour = "gray80")) +
+  scale_x_continuous(name="Observado", limits=c(-15, 70)) + scale_y_continuous(name="Predicho", limits=c(-15, 70))
+g_valca
+
+
+range(val_clay$obs)
+range(val_clay$pred)
+lm_valcl<-lm(data = val_clay, pred~obs)
+g_valcl <- ggplot(val_clay, aes(x = obs, y = pred)) + geom_point() + 
+  geom_abline(aes(intercept=lm_valcl[["coefficients"]][["(Intercept)"]], slope=lm_valcl[["coefficients"]][["obs"]]), colour = "red") + 
+  geom_abline(aes(intercept=0, slope=1), colour = "black", linetype = "dashed") + 
+  theme(panel.background = element_rect(fill = "gray100"), legend.title=element_blank(), panel.grid.major = element_line(colour = "gray80")) +
+  scale_x_continuous(name="Observado", limits=c(0, 65)) + scale_y_continuous(name="Predicho", limits=c(0, 65))
+g_valcl
+
+
+##-------
+## Extracción componentes for interpretation purposes
+
+load_mo <- loadings(pls_mo_cr) %>% write.csv(file = "c:/Users/usuario/Desktop/mo_cr.csv")
+load_carb <- loadings(pls_carb_cr) %>% write.csv(file = "c:/Users/usuario/Desktop/carb_cr.csv")
+load_clay <- loadings(pls_clay_cr) %>% write.csv(file = "c:/Users/usuario/Desktop/clay_cr.csv")  
+
+plot(pls_clay_cr, "loadings",  comps = 1:10, legendpos = "topleft", xlab = "nm")

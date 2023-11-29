@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605617124192.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3688421245",
+    "id" : "42950798",
+    "lastKnownWriteTime" : 1605866510,
+    "last_content_update" : 1605866510,
+    "path" : "C:/codigos_r/espectrosuelo/nuevos_cod/save_data_scatter.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "9,41",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,63 @@
+
+#MO
+
+plot(x = seq(400,2450,1), y = rf_mo_raw[which.min(rf_mo_raw[,1]),-1], ylim = c(0,0.5), type = "l")
+lines(x = seq(400,2450,1), y = rf_mo_raw[which.max(rf_mo_raw[,1]),-1], col = "red")
+lines(x = seq(400,2450,1), y = rf_mo_raw[with(rf_mo_raw, which(mo == quantile(mo, .5, type = 1))),-1], col = "blue")
+lines(x = seq(400,2450,1), y = rf_mo_raw[with(rf_mo_raw, which(mo == quantile(mo, .25, type = 1))),-1], col = "green")
+lines(x = seq(400,2450,1), y = rf_mo_raw[with(rf_mo_raw, which(mo == quantile(mo, .75, type = 1))),-1], col = "orange")
+
+#carb
+
+plot(x = seq(400,2450,1), y = rf_carb_raw[which.min(rf_carb_raw[,1]),-1], ylim = c(0,0.5), type = "l")
+lines(x = seq(400,2450,1), y = rf_carb_raw[which.max(rf_carb_raw[,1]),-1], col = "red")
+lines(x = seq(400,2450,1), y = rf_carb_raw[with(rf_carb_raw, which(carb == quantile(carb, .5, type = 1)))[1],-1], col = "blue")
+lines(x = seq(400,2450,1), y = rf_carb_raw[with(rf_carb_raw, which(carb == quantile(carb, .25, type = 1)))[2],-1], col = "green")
+lines(x = seq(400,2450,1), y = rf_carb_raw[with(rf_carb_raw, which(carb == quantile(carb, .75, type = 1)))[1],-1], col = "orange")
+
+#clay
+
+plot(x = seq(400,2450,1), y = rf_clay_raw[which.min(rf_clay_raw[,1]),-1], ylim = c(0,0.5), type = "l")
+lines(x = seq(400,2450,1), y = rf_clay_raw[with(rf_clay_raw, which(clay == quantile(clay, .25, type = 1)))[1],-1], col = "green")
+lines(x = seq(400,2450,1), y = rf_clay_raw[with(rf_clay_raw, which(clay == quantile(clay, .5, type = 1)))[1],-1], col = "blue")
+lines(x = seq(400,2450,1), y = rf_clay_raw[with(rf_clay_raw, which(clay == quantile(clay, .75, type = 1)))[1],-1], col = "orange")
+lines(x = seq(400,2450,1), y = rf_clay_raw[which.max(rf_clay_raw[,1]),-1], col = "red")
+
+#Quantiles 25 and 75 for the three datasets
+
+#raw
+
+quantiles_raw = matrix(nrow = ncol(rf_mo_raw)-1, ncol = 3)
+for(i in 1:ncol(rf_mo_raw)-1){
+  quantiles_raw[i,1] = quantile(rf_mo_raw[,i+1], probs = 0.25)
+  quantiles_raw[i,2] = quantile(rf_mo_raw[,i+1], probs = 0.5)
+  quantiles_raw[i,3] = quantile(rf_mo_raw[,i+1], probs = 0.75)
+}
+quantiles_raw = as.data.frame(quantiles_raw)
+names(quantiles_raw) = c("perc_25", "median", "perc_75")
+write.csv2(quantiles_raw, file = "D:/revision_paper01/quant_raw.csv")
+
+#cr
+
+quantiles_cr = matrix(nrow = ncol(rf_mo_cr)-1, ncol = 3)
+for(i in 1:ncol(rf_mo_cr)-1){
+  quantiles_cr[i,1] = quantile(rf_mo_cr[,i+1], probs = 0.25)
+  quantiles_cr[i,2] = quantile(rf_mo_cr[,i+1], probs = 0.5)
+  quantiles_cr[i,3] = quantile(rf_mo_cr[,i+1], probs = 0.75)
+}
+quantiles_cr = as.data.frame(quantiles_cr)
+names(quantiles_cr) = c("perc_25", "median", "perc_75")
+write.csv2(quantiles_cr, file = "D:/revision_paper01/quant_cr.csv")
+
+#msc
+
+quantiles_msc = matrix(nrow = ncol(rf_mo_msc)-1, ncol = 3)
+for(i in 1:ncol(rf_mo_msc)-1){
+  quantiles_msc[i,1] = quantile(rf_mo_msc[,i+1], probs = 0.25)
+  quantiles_msc[i,2] = quantile(rf_mo_msc[,i+1], probs = 0.5)
+  quantiles_msc[i,3] = quantile(rf_mo_msc[,i+1], probs = 0.75)
+}
+quantiles_msc = as.data.frame(quantiles_msc)
+names(quantiles_msc) = c("perc_25", "median", "perc_75")
+write.csv2(quantiles_msc, file = "D:/revision_paper01/quant_msc.csv")
+

@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1605279808839.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1447961444",
+    "id" : "8FF92684",
+    "lastKnownWriteTime" : 1605525900,
+    "last_content_update" : 1605540773992,
+    "path" : "C:/codigos_r/espectrosuelo/nuevos_cod/global_sfs.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "65,31",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
